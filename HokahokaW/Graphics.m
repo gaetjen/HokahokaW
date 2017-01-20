@@ -532,7 +532,7 @@ Block[{temp,
 HHListLinePlotMean[args___] := Message[HHListLinePlotMean::invalidArgs, {args}];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*HHLabelGraphics*)
 
 
@@ -612,7 +612,7 @@ HHExploreGraphicMouse[graph_Graphics] :=
         Graphics[If[ dragging,
                    {gr, rectangle[first, second]},
                    gr
-                 ], PlotRange -> {{rx1, rx2}, {ry1, ry2}}, AspectRatio -> ar, Sequence @@ opt],
+                 ], PlotRange -> Dynamic@{{rx1, rx2}, {ry1, ry2}}, AspectRatio -> ar, Sequence @@ opt],
          {{"MouseDown", 1} :> (first = MousePosition["Graphics"]),
         {"MouseDragged", 1} :> (dragging = True;
                                 second = MousePosition["Graphics"]),
