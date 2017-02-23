@@ -121,10 +121,16 @@ HHExploreGraphicSlider::usage= "Pass a Graphics object to explore it by dynamica
 
 
 (* ::Subsection:: *)
-(*HHExploreGraphicMouse*)
+(*HHExploreGraphic*)
 
 
-HHExploreGraphicMouse::usage= "Pass a Graphics object to explore it by zooming and panning with left and right mouse buttons respectively.";
+HHExploreGraphic::usage= "Pass a Graphics object to explore it by zooming and panning with left and right mouse buttons respectively. Left click once to reset view.";
+
+
+HHOptAxesRedraw::usage= "Option for HHExploreGraphicMouse to specify redrawing of axes. Default True.";
+
+
+Options[HHExploreGraphic] = {HHOptAxesRedraw -> True};
 
 
 (* ::Subsection::Closed:: *)
@@ -532,7 +538,7 @@ Block[{temp,
 HHListLinePlotMean[args___] := Message[HHListLinePlotMean::invalidArgs, {args}];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*HHLabelGraphics*)
 
 
@@ -597,36 +603,41 @@ HHExploreGraphicSlider[gr_Graphics] :=
 
 
 (* ::Subsection:: *)
-(*HHExploreGraphicMouse*)
+(*HHExploreGraphic*)
 
 
 (* adapted from http://forums.wolfram.com/mathgroup/archive/2008/Jan/msg00009.html *)
-HHExploreGraphicMouse[graph_Graphics] :=
+(*TODO: update documentation*)
+HHExploreGraphic[graph_Graphics, opts:OptionsPattern[] ] :=
   With[ {gr = First[graph],
-    opt = DeleteCases[Options[graph], PlotRange -> _ | AspectRatio -> _],
+    opt = DeleteCases[Options[graph], PlotRange -> _ | AspectRatio -> _ | AxesOrigin -> _],
     plr = PlotRange /. AbsoluteOptions[graph, PlotRange],
-    ar = AspectRatio /. AbsoluteOptions[graph, AspectRatio], 
-    rectangle = {Dashing[Small],Line[{#1, {First[#2], Last[#1]}, #2, {First[#1], Last[#2]}, #1}]} &},
-    DynamicModule[ {dragging = False, first, second, rx1, rx2, ry1, ry2, range = {{rx1, rx2}, {ry1, ry2}} = plr}, (*range isn't used, but it doesn't work without*)
+    ar = AspectRatio /. AbsoluteOptions[graph, AspectRatio],
+    ao = AbsoluteOptions[AxesOrigin],
+    rectangle = {Dashing[Small],Line[{#1, {First[#2], Last[#1]}, #2, {First[#1], Last[#2]}, #1}]} &,
+    optAxesRedraw = OptionValue[HHOptAxesRedraw]},
+    DynamicModule[ {dragging = False, first, second, rx1, rx2, ry1, ry2, range = plr},
+    {{rx1, rx2}, {ry1, ry2}} = plr;
       Panel@EventHandler[Dynamic@
         Graphics[If[ dragging,
                    {gr, rectangle[first, second]},
                    gr
-                 ], PlotRange -> Dynamic@{{rx1, rx2}, {ry1, ry2}}, AspectRatio -> ar, Sequence @@ opt],
+                 ], PlotRange -> Dynamic@range, AspectRatio -> ar, AxesOrigin -> If[optAxesRedraw, Dynamic@Mean[range\[Transpose]], ao], Sequence @@ opt],
          {{"MouseDown", 1} :> (first = MousePosition["Graphics"]),
         {"MouseDragged", 1} :> (dragging = True;
                                 second = MousePosition["Graphics"]),
         {"MouseUp", 1} :> If[ dragging,
                             dragging = False;
-                            {{rx1, rx2}, {ry1, ry2}} = Transpose@{first, second},
-                            {{rx1, rx2}, {ry1, ry2}} = plr
+                            range = {{rx1, rx2}, {ry1, ry2}} = Transpose@{first, second},
+                            range = {{rx1, rx2}, {ry1, ry2}} = plr
                           ],
        {"MouseDown", 2} :> (first = {sx1, sy1} = MousePosition["Graphics"]),
          {"MouseDragged", 2} :> (second = {sx2, sy2} = MousePosition["Graphics"];
                                  rx1 = rx1 - (sx2 - sx1);
                                  rx2 = rx2 - (sx2 - sx1);
                                  ry1 = ry1 - (sy2 - sy1);
-                                 ry2 =  ry2 - (sy2 - sy1))
+                                 ry2 =  ry2 - (sy2 - sy1);
+                                 range = {{rx1, rx2}, {ry1, ry2}})
        }]]
   ];
 
