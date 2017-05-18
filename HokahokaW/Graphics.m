@@ -124,13 +124,13 @@ HHExploreGraphicSlider::usage= "Pass a Graphics object to explore it by dynamica
 (*HHExploreGraphic*)
 
 
-HHExploreGraphic::usage= "Pass a Graphics object to explore it by zooming and panning with left and right mouse buttons respectively. Left click once to reset view.";
+HHExploreGraphics::usage= "Pass a Graphics object to explore it by zooming and panning with left and right mouse buttons respectively. Left click once to reset view.";
 
 
-HHOptAxesRedraw::usage= "Option for HHExploreGraphicMouse to specify redrawing of axes. Default True.";
+HHOptAxesRedraw::usage= "Option for HHExploreGraphics to specify redrawing of axes. Default True.";
 
 
-Options[HHExploreGraphic] = {HHOptAxesRedraw -> True};
+Options[HHExploreGraphics] = {HHOptAxesRedraw -> True};
 
 
 (* ::Subsection::Closed:: *)
@@ -538,7 +538,7 @@ Block[{temp,
 HHListLinePlotMean[args___] := Message[HHListLinePlotMean::invalidArgs, {args}];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*HHLabelGraphics*)
 
 
@@ -603,12 +603,13 @@ HHExploreGraphicSlider[gr_Graphics] :=
 
 
 (* ::Subsection:: *)
-(*HHExploreGraphic*)
+(*HHExploreGraphics*)
 
 
 (* adapted from http://forums.wolfram.com/mathgroup/archive/2008/Jan/msg00009.html *)
 (*TODO: update documentation*)
-HHExploreGraphic[graph_Graphics, opts:OptionsPattern[] ] :=
+(*TODO: check bugs (probably because of antialiasing option in show?)*)
+HHExploreGraphics[graph_Graphics, opts:OptionsPattern[] ] :=
   With[ {gr = First[graph],
     opt = DeleteCases[Options[graph], PlotRange -> _ | AspectRatio -> _ | AxesOrigin -> _],
     plr = PlotRange /. AbsoluteOptions[graph, PlotRange],
