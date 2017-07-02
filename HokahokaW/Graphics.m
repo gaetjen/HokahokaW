@@ -122,7 +122,7 @@ HHImageThresholdLinear::usage="Thresholds an image by linear closeness to the gi
 (* //ToDo2 create HHImageTestImage[] for help files??*)
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*HHColorData*)
 
 
@@ -135,7 +135,7 @@ HHOptColorData::usage = "";
 Options[HHColorData] = {HHOptColorData -> ColorData[97, "ColorList"]};
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*HHExploreGraphics*)
 
 
@@ -151,13 +151,21 @@ HHOptAxesRedraw::usage=
 Options[HHExploreGraphics] = {HHOptAxesRedraw -> True};
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*HHExploreGraphicsSlider*)
 
 
 HHExploreGraphicsSlider::usage=
 "Pass a Graphics object to explore it by dynamically changing the PlotRange with \
 the help of Sliders.";
+
+
+(* ::Subsection:: *)
+(*HHListLinePlotQuantiles*)
+
+
+HHListLinePlotQuantiles::usage=
+"Visualizes the quantiles and median for a collection of data series.";
 
 
 (* ::Section:: *)
@@ -877,12 +885,11 @@ HHColorData[ count_Integer, opts: OptionsPattern[] ]:=
 HHColorData[args___] := Message[HHColorData::invalidArgs, {args}];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*HHExploreGraphics*)
 
 
 (* adapted from http://forums.wolfram.com/mathgroup/archive/2008/Jan/msg00009.html *)
-(*TODO: update documentation*)
 HHExploreGraphics[graph_Graphics, opts:OptionsPattern[] ] :=
   With[ {gr = First[graph],
     opt = DeleteCases[Options[graph], PlotRange -> _ | AspectRatio -> _ | AxesOrigin -> _],
@@ -917,7 +924,7 @@ HHExploreGraphics[graph_Graphics, opts:OptionsPattern[] ] :=
   ];
 
 
-(* ::Subsection:: *)
+(* ::Subsection::Closed:: *)
 (*HHExploreGraphicsSlider*)
 
 
@@ -937,6 +944,39 @@ HHExploreGraphicsSlider[gr_Graphics] :=
      {{pos, {Mean[tempRange[[1]]],  Mean[tempRange[[2]]]}, "Position"}, {tempRange[[1, 1]], tempRange[[2, 1]]}, {tempRange[[1, 2]], tempRange[[2, 2]]}}
     ]
   ];
+
+
+(* ::Subsection:: *)
+(*HHListLinePlotQuantiles*)
+
+
+HHListLinePlotQuantiles[data_List/;Depth[data]==3, opts:OptionsPattern[]]:=
+Module[
+	{sorted,
+	median,
+	trDat},
+	trDat = data\[Transpose];
+	median = Median /@ trDat;
+	sorted = Transpose[Sort /@ trDat];
+	ListLinePlot[
+		Join[
+			Style[#, Opacity[0]]& /@ sorted,
+			{Style[median, Black, Thin]}	
+		],
+		Filling -> fillingList[Length@sorted],
+		opts
+	]
+];
+
+
+(* ::Subsubsection:: *)
+(*Helper*)
+
+
+(*creates a list of rules that can be passed to the Filling option in ListLinePlot*)
+fillingList[n_]:= Table[
+	x->{{x + 1}, Lighter@ColorData["Rainbow", (x-1)/(n-1)]},
+	{x, 1, n-1}];
 
 
 (* ::Section:: *)
