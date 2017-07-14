@@ -975,8 +975,15 @@ Module[
 
 (*creates a list of rules that can be passed to the Filling option in ListLinePlot*)
 fillingList[n_]:= Table[
-	x->{{x + 1}, Lighter@ColorData["Rainbow", (x-1)/(n-1)]},
-	{x, 1, n-1}];
+	x -> {{x + 1}, 
+		Blend[
+		{LABColor[0.3, -.15, -.15],
+		 LABColor[0.7, .4, .4],
+		 LABColor[0.3, -.15, -.15]},
+		(x-1)/(n-2)]},
+	{x, 1, n-1}
+];
+
 
 
 (* ::Section:: *)
