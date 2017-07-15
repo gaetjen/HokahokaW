@@ -12,6 +12,9 @@ BeginPackage["HokahokaW`Graphics`", {"HokahokaW`"}];
 HHOptLabelStyleSpecifications::usage = "Option for HHLabelGraphics.";
 
 
+HHOptGradientFunction::usage = "Option for HHListLinePlotQuantiles.";
+
+
 (* ::Subsection::Closed:: *)
 (*HHStackLists / HHListLinePlotStack*)
 
@@ -166,6 +169,11 @@ the help of Sliders.";
 
 HHListLinePlotQuantiles::usage=
 "Visualizes the quantiles and median for a collection of data series.";
+Options[HHListLinePlotQuantiles] = 
+	{FilterRules[
+			Options[ListLinePlot],
+			Except[ColorFunction | Filling -> _]
+		], HHOptGradientFunction -> defaultGradient}//Flatten;
 
 
 (* ::Section:: *)
@@ -954,7 +962,13 @@ HHListLinePlotQuantiles[data_List/;Depth[data]==3, opts:OptionsPattern[]]:=
 Module[
 	{sorted,
 	median,
-	trDat},
+	trDat,
+	llpOptions = Sequence@@
+		FilterRules[
+			{opts},
+			Except[HHOptGradientFunction | ColorFunction | Filling -> _]
+		],
+	gradF = OptionValue[HHOptGradientFunction]},
 	trDat = data\[Transpose];
 	median = Median /@ trDat;
 	sorted = Transpose[Sort /@ trDat];
@@ -963,27 +977,29 @@ Module[
 			Style[#, Opacity[0]]& /@ sorted,
 			{Style[median, Black, Thin]}	
 		],
-		Filling -> fillingList[Length@sorted],
-		opts
+		Filling -> fillingList[Length@sorted, gradF],
+		llpOptions
 	]
 ];
 
 
 (* ::Subsubsection:: *)
-(*Helper*)
+(*Helpers*)
 
 
 (*creates a list of rules that can be passed to the Filling option in ListLinePlot*)
-fillingList[n_]:= Table[
+fillingList[n_, f_]:= Table[
 	x -> {{x + 1}, 
-		Blend[
-		{LABColor[0.3, -.15, -.15],
-		 LABColor[0.7, .4, .4],
-		 LABColor[0.3, -.15, -.15]},
-		(x-1)/(n-2)]},
+		f[(x-1)/(n-2)]},
 	{x, 1, n-1}
 ];
 
+defaultGradient[x_] := Blend[
+	{LABColor[0.3, -.15, -.15],
+	 LABColor[0.7, .4, .4],
+	 LABColor[0.3, -.15, -.15]},
+	x
+];
 
 
 (* ::Section:: *)
@@ -1055,7 +1071,7 @@ simplePixelCluster[pixelList_, absThreshold_]:=
 ];*)
 
 
-(* ::Subsubsection::Closed:: *)
+(* ::Subsubsection:: *)
 (*BAK: HHListLinePlotStack (Old Signature)*)
 
 
