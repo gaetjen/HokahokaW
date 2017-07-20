@@ -988,7 +988,9 @@ Module[
 
 
 (*creates a list of rules that can be passed to the Filling option in ListLinePlot*)
-fillingList[n_, f_]:= Table[
+fillingList[2, f_]:= {1 -> {{2}, f[0.5]}}
+
+fillingList[n_/;n>2, f_]:= Table[
 	x -> {{x + 1}, 
 		f[(x-1)/(n-2)]},
 	{x, 1, n-1}
