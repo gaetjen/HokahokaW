@@ -183,7 +183,7 @@ Options[HHListLinePlotQuantiles] =
 Begin["`Private`"];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*HHStackLists*)
 
 
@@ -355,7 +355,7 @@ Block[{tempData, tempPlotRangeOpts},
 HHListLinePlotStack[args___] := Message[HHListLinePlotStack::invalidArgs, {args}];
 
 
-(* ::Subsection::Closed:: *)
+(* ::Subsection:: *)
 (*HHListLinePlotMean*)
 
 
@@ -966,7 +966,7 @@ Module[
 	llpOptions = Sequence@@
 		FilterRules[
 			{opts},
-			Except[HHOptGradientFunction | ColorFunction | Filling -> _]
+			Except[ HHOptGradientFunction | ColorFunction | Filling -> _ ]
 		],
 	gradF = OptionValue[HHOptGradientFunction]},
 	trDat = data\[Transpose];
